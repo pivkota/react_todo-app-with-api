@@ -12,20 +12,10 @@ import { TodoHeader } from './todo/TodoHeader';
 import { TodoMain } from './todo/TodoMain';
 import { TodoFooter } from './todo/TodoFooter';
 import { ErrorNotification } from './components/Error/ErrorNotification';
+import { ErrorMessage } from './types/ErrorMessage';
+import { FilterOption } from './types/FilterOption';
 
-export enum FilterOption {
-  Active = 'Active',
-  Completed = 'Completed',
-  default = 'Default',
-}
-
-export enum ErrorMessage {
-  title = 'Title should not be empty',
-  loading = 'Unable to load todos',
-  add = 'Unable to add a todo',
-  delete = 'Unable to delete a todo',
-  default = '',
-}
+export { FilterOption, ErrorMessage };
 
 function FilteredTodos(todos: Todo[], filterOption: FilterOption) {
   switch (filterOption) {
@@ -55,7 +45,6 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [processings, setProcessings] = useState<number[]>([]);
-  const isSaving = tempTodo !== null;
   const deleteTodo = async (id: number) => {
     setProcessings(prev => [...prev, id]);
 
@@ -210,7 +199,7 @@ export const App: React.FC = () => {
           todoTitle={todoTitle}
           setTodoTitle={setTodoTitle}
           inputRef={inputRef}
-          isSaving={isSaving}
+          isSaving={!!tempTodo}
           onToggleAll={handleToggleAll}
         ></TodoHeader>
         <TodoMain

@@ -1,5 +1,6 @@
 import classNames from 'classnames';
-import { ErrorMessage } from '../../App';
+import { ErrorMessage } from '../../types/ErrorMessage';
+
 import React from 'react';
 
 type Props = {

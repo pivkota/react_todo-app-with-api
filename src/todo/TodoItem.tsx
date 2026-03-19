@@ -20,6 +20,7 @@ export const TodoItem: React.FC<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(todo.title);
   const [isUpdating, setIsUpdating] = useState(false);
+  const isSaving = useRef(false);
   const editInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export const TodoItem: React.FC<Props> = ({
   }, [isEditing]);
 
   const handleUpdateTitle = async () => {
-    if (isUpdating) {
+    if (!isEditing || isSaving.current) {
       return;
     }
 
@@ -37,25 +38,27 @@ export const TodoItem: React.FC<Props> = ({
 
     if (trimmedTitle === todo.title) {
       setIsEditing(false);
-      {
-        return;
-      }
+
+      return;
     }
 
     if (!trimmedTitle) {
       onDelete();
-      {
-        return;
-      }
+
+      return;
     }
 
+    isSaving.current = true;
     setIsUpdating(true);
 
     try {
       await onUpdate({ title: trimmedTitle });
       setIsEditing(false);
     } catch {
+      setIsUpdating(false);
+      editInputRef.current?.focus();
     } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -91,7 +94,6 @@ export const TodoItem: React.FC<Props> = ({
             e.preventDefault();
             handleUpdateTitle();
           }}
-          onBlur={handleUpdateTitle}
         >
           <input
             data-cy="TodoTitleField"
@@ -101,6 +103,7 @@ export const TodoItem: React.FC<Props> = ({
             value={newTitle}
             onChange={e => setNewTitle(e.target.value)}
             onKeyUp={handleKeyUp}
+            onBlur={handleUpdateTitle}
             disabled={isUpdating || isProcessed}
           />
         </form>
